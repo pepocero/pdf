@@ -42,8 +42,8 @@ $serverInfo = [
             <!-- Sección de Inicio -->
             <div class="toolbar-section expanded">
                 <div class="toolbar-section-header">
-                    <div class="toolbar-section-label">HOME</div>
-                    <div class="toolbar-section-toggle">▼</div>
+                    <h3>Inicio</h3>
+                    <span class="toolbar-section-toggle">▼</span>
                 </div>
                 <div class="toolbar-section-content">
                     <div class="tool-group">
@@ -66,8 +66,8 @@ $serverInfo = [
             <!-- Sección de Insertar -->
             <div class="toolbar-section">
                 <div class="toolbar-section-header">
-                    <div class="toolbar-section-label">INSERT</div>
-                    <div class="toolbar-section-toggle">▼</div>
+                    <h3>Insertar</h3>
+                    <span class="toolbar-section-toggle">▼</span>
                 </div>
                 <div class="toolbar-section-content">
                     <div class="tool-group">
@@ -95,11 +95,11 @@ $serverInfo = [
                 </div>
             </div>
 
-            <!-- Sección de Dibujo -->
+            <!-- Sección de Dibujar -->
             <div class="toolbar-section">
                 <div class="toolbar-section-header">
-                    <div class="toolbar-section-label">DRAW</div>
-                    <div class="toolbar-section-toggle">▼</div>
+                    <h3>Dibujar</h3>
+                    <span class="toolbar-section-toggle">▼</span>
                 </div>
                 <div class="toolbar-section-content">
                     <div class="tool-group">
@@ -132,8 +132,8 @@ $serverInfo = [
             <!-- Sección de Formato -->
             <div class="toolbar-section">
                 <div class="toolbar-section-header">
-                    <div class="toolbar-section-label">FORMAT</div>
-                    <div class="toolbar-section-toggle">▼</div>
+                    <h3>Formato</h3>
+                    <span class="toolbar-section-toggle">▼</span>
                 </div>
                 <div class="toolbar-section-content">
                     <div class="tool-group">
@@ -167,11 +167,11 @@ $serverInfo = [
                 </div>
             </div>
 
-            <!-- Sección de Edición -->
+            <!-- Sección de Editar -->
             <div class="toolbar-section">
                 <div class="toolbar-section-header">
-                    <div class="toolbar-section-label">EDIT</div>
-                    <div class="toolbar-section-toggle">▼</div>
+                    <h3>Editar</h3>
+                    <span class="toolbar-section-toggle">▼</span>
                 </div>
                 <div class="toolbar-section-content">
                     <div class="tool-group">
@@ -207,11 +207,11 @@ $serverInfo = [
                 </div>
             </div>
 
-            <!-- Sección de Movimiento -->
+            <!-- Sección de Transformar -->
             <div class="toolbar-section">
                 <div class="toolbar-section-header">
-                    <div class="toolbar-section-label">MOVE</div>
-                    <div class="toolbar-section-toggle">▼</div>
+                    <h3>Transformar</h3>
+                    <span class="toolbar-section-toggle">▼</span>
                 </div>
                 <div class="toolbar-section-content">
                     <div class="tool-group">
@@ -243,13 +243,24 @@ $serverInfo = [
                 </div>
             </div>
 
-            <!-- Paginación compacta -->
-            <div class="pagination-compact">
-                <div class="pagination-compact-header">Paginación</div>
-                <div class="pagination-controls">
-                    <button id="prevPageBtn" class="pagination-btn" title="Página anterior" data-tooltip="Página anterior">‹</button>
-                    <div id="pageInfo" class="pagination-info">1/1</div>
-                    <button id="nextPageBtn" class="pagination-btn" title="Página siguiente" data-tooltip="Página siguiente">›</button>
+            <!-- Sección de Navegación -->
+            <div class="toolbar-section">
+                <div class="toolbar-section-header">
+                    <h3>Navegación</h3>
+                    <span class="toolbar-section-toggle">▼</span>
+                </div>
+                <div class="toolbar-section-content">
+                    <div class="tool-group">
+                        <button id="prevPageBtn" class="tool-btn" title="Página anterior" data-tooltip="Página anterior">
+                            <span class="icon">‹</span>
+                            <span class="tool-btn-text">Anterior</span>
+                        </button>
+                        <span id="pageInfo" style="font-size: 0.7rem; color: #666; text-align: center;">1/1</span>
+                        <button id="nextPageBtn" class="tool-btn" title="Página siguiente" data-tooltip="Página siguiente">
+                            <span class="icon">›</span>
+                            <span class="tool-btn-text">Siguiente</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

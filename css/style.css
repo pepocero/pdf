@@ -14,49 +14,99 @@ body {
 
 .app-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     height: 100vh;
 }
 
-/* Header */
+/* Contenedor principal con header y contenido */
+.main-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100vh;
+    overflow: hidden;
+}
 .app-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
     color: white;
-    padding: 1rem 2rem;
+    padding: 0.75rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     z-index: 1000;
+    min-height: 56px;
 }
 
 .app-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 600;
+    letter-spacing: -0.025em;
 }
 
 .header-controls {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
+    align-items: center;
 }
 
-/* Botones */
+/* Controles de zoom en el header */
+.zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.zoom-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.zoom-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+.zoom-info {
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 500;
+    min-width: 45px;
+    text-align: center;
+}
+
+/* Botones - Estilo moderno */
 .btn {
     padding: 0.5rem 1rem;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     font-weight: 500;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    min-height: 36px;
 }
 
 .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .btn:disabled {
@@ -67,34 +117,34 @@ body {
 }
 
 .btn-primary {
-    background: #4CAF50;
+    background: #10b981;
     color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-    background: #45a049;
+    background: #059669;
 }
 
 .btn-success {
-    background: #2196F3;
+    background: #3b82f6;
     color: white;
 }
 
 .btn-success:hover:not(:disabled) {
-    background: #1976D2;
+    background: #2563eb;
 }
 
 .btn-secondary {
-    background: #FF9800;
+    background: #f59e0b;
     color: white;
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background: #F57C00;
+    background: #d97706;
 }
 
 .btn-info {
-    background: #17a2b8;
+    background: #6366f1;
     color: white;
 }
 
@@ -116,15 +166,16 @@ body {
     min-height: 48px;
 }
 
-.toolbar-section {
-    display: flex;
+/* Esta regla se aplica solo al toolbar horizontal, no al sidebar */
+.toolbar:not(.sidebar) .toolbar-section {
+    display: block;
     align-items: center;
     gap: 0.25rem;
     padding: 0 0.5rem;
     border-right: 1px solid #e1e5e9;
 }
 
-.toolbar-section:last-child {
+.toolbar:not(.sidebar) .toolbar-section:last-child {
     border-right: none;
 }
 
@@ -134,12 +185,14 @@ body {
 
 .tool-group {
     display: flex;
+    flex-direction: column;
     gap: 0.25rem;
-    align-items: center;
+    align-items: stretch;
+    width: 100%;
 }
 
 .tool-btn {
-    padding: 0.375rem 0.5rem;
+    padding: 0.25rem 0.4rem;
     border: 1px solid #d1d5db;
     background: #ffffff;
     border-radius: 4px;
@@ -147,12 +200,14 @@ body {
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    justify-content: center;
-    min-width: 32px;
-    min-height: 32px;
-    font-size: 0.875rem;
+    justify-content: flex-start;
+    min-width: 28px;
+    min-height: 28px;
+    font-size: 0.75rem;
     font-weight: 500;
     color: #374151;
+    gap: 0.4rem;
+    margin-bottom: 0.2rem;
 }
 
 .tool-btn:hover {
@@ -172,9 +227,453 @@ body {
     transform: translateY(1px);
 }
 
+/* Sidebar lateral - Estilo expandido con etiquetas */
+.toolbar {
+    background: #ffffff;
+    border-right: 1px solid #e1e5e9;
+    padding: 1rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+    box-shadow: 2px 0 4px rgba(0,0,0,0.05);
+    z-index: 999;
+    width: 200px;
+    min-width: 200px;
+    align-items: stretch;
+    transition: width 0.3s ease;
+}
+
+.toolbar.compact {
+    width: 60px;
+    min-width: 60px;
+    padding: 1rem 0.5rem;
+}
+
+/* Submenús desplegables */
+.toolbar-section {
+    position: relative;
+    width: 100%;
+}
+
+.toolbar-section-header {
+    padding: 0.25rem 0.5rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 0.25rem;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.toolbar-section-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    transition: width 0.2s ease;
+}
+
+.toolbar-section-header:hover {
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+    border-color: #3b82f6;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+}
+
+.toolbar-section-header:hover::before {
+    width: 5px;
+}
+
+.toolbar-section-label {
+    font-size: 0.6rem;
+    color: #6b7280;
+    background: rgba(59, 130, 246, 0.1);
+    padding: 0.15rem 0.4rem;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    transition: all 0.2s ease;
+    text-align: center;
+    margin-bottom: 0.25rem;
+}
+
+.toolbar-section-header:hover .toolbar-section-label {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.toolbar-section-toggle {
+    font-size: 0.7rem;
+    color: #6b7280;
+    transition: transform 0.2s ease;
+    text-align: center;
+}
+
+.toolbar-section.expanded .toolbar-section-toggle {
+    transform: rotate(180deg);
+    color: #3b82f6;
+}
+
+.toolbar-section-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    margin-top: 0.25rem;
+    width: 100%;
+}
+
+.toolbar-section.expanded .toolbar-section-content {
+    max-height: 500px;
+}
+
+.toolbar.compact .toolbar-section-header {
+    padding: 0.5rem;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.toolbar.compact .toolbar-section-title-row {
+    display: none;
+}
+
+.toolbar.compact .toolbar-section-toggle {
+    display: none;
+}
+
+.toolbar.compact .toolbar-section-content {
+    max-height: none;
+    overflow: visible;
+}
+
+/* Paginación compacta */
+.pagination-compact {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+}
+
+.pagination-compact-header {
+    font-size: 0.7rem;
+    color: #475569;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25rem;
+}
+
+.pagination-btn {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    color: #374151;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    transition: all 0.2s ease;
+    font-weight: 600;
+}
+
+.pagination-btn:hover {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+    transform: scale(1.1);
+}
+
+.pagination-info {
+    font-size: 0.65rem;
+    color: #6b7280;
+    font-weight: 600;
+    text-align: center;
+    flex: 1;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #e5e7eb;
+}
+
+.tool-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: stretch;
+    width: 100%;
+}
+
+.tool-btn {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    min-height: 40px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    position: relative;
+    text-align: left;
+}
+
+.toolbar.compact .tool-btn {
+    padding: 0.5rem;
+    justify-content: center;
+    min-height: 48px;
+    width: 48px;
+    margin: 0 auto;
+}
+
+.tool-btn:hover {
+    border-color: #3b82f6;
+    background: #f3f4f6;
+    color: #1f2937;
+    transform: scale(1.02);
+}
+
+.toolbar.compact .tool-btn:hover {
+    transform: scale(1.05);
+}
+
+.tool-btn.active {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white !important;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.tool-btn.active .tool-btn-text {
+    color: white !important;
+}
+
+.tool-btn.active .icon {
+    color: white !important;
+}
+
+.tool-btn:active {
+    transform: scale(0.98);
+}
+
+.toolbar.compact .tool-btn:active {
+    transform: scale(0.95);
+}
+
 .icon {
-    font-size: 1rem;
+    font-size: 0.9rem;
     line-height: 1;
+    flex-shrink: 0;
+}
+
+.toolbar.compact .icon {
+    font-size: 1.3rem;
+}
+
+.tool-btn-text {
+    font-size: 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.toolbar.compact .tool-btn-text {
+    display: none;
+}
+
+/* Botón toggle para modo compacto */
+.toolbar-toggle {
+    position: absolute;
+    top: 1rem;
+    right: -15px;
+    width: 30px;
+    height: 30px;
+    background: #3b82f6;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.toolbar-toggle:hover {
+    background: #2563eb;
+    transform: scale(1.1);
+}
+
+.toolbar.compact .toolbar-toggle {
+    right: -15px;
+}
+
+.toolbar-toggle::before {
+    content: '◀';
+    transition: transform 0.3s ease;
+}
+
+.toolbar.compact .toolbar-toggle::before {
+    content: '▶';
+}
+
+/* Tooltips para los botones del sidebar */
+.tool-btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #1f2937;
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 1000;
+    margin-left: 0.5rem;
+}
+
+/* Estilos adicionales para el sidebar */
+.toolbar-section span {
+    font-size: 0.7rem;
+    color: #666;
+    text-align: center;
+    margin: 0.25rem 0;
+    display: block;
+}
+
+/* Mejorar la apariencia de los controles en el sidebar */
+/* Mejorar la apariencia de los controles en el sidebar expandido */
+.toolbar-section input[type="color"] {
+    width: 100%;
+    height: 32px;
+    border-radius: 4px;
+    border: 1px solid #d1d5db;
+    cursor: pointer;
+    margin: 0.25rem 0;
+}
+
+.toolbar-section input[type="range"] {
+    width: 100%;
+    margin: 0.25rem 0;
+}
+
+.toolbar-section select {
+    width: 100%;
+    font-size: 0.8rem;
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+    border-radius: 4px;
+    border: 1px solid #d1d5db;
+    background: white;
+}
+
+/* Estilos para el modo compacto */
+.toolbar.compact .toolbar-section input[type="color"] {
+    width: 32px;
+    height: 32px;
+    margin: 0.25rem auto;
+}
+
+.toolbar.compact .toolbar-section input[type="range"] {
+    width: 100%;
+    margin: 0.25rem 0;
+}
+
+.toolbar.compact .toolbar-section select {
+    display: none; /* Ocultar selectores en modo compacto */
+}
+
+/* Scrollbar personalizado para el sidebar */
+.toolbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.toolbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.toolbar::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+}
+
+.toolbar::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Mejoras adicionales para el estilo WYSIWYG */
+.tool-btn[data-tool="bold"],
+.tool-btn[data-tool="italic"],
+.tool-btn[data-tool="underline"],
+.tool-btn[data-tool="strikethrough"] {
+    font-weight: bold;
+    font-style: italic;
+    text-decoration: underline;
+}
+
+.tool-btn[data-tool="bold"] {
+    font-weight: bold;
+}
+
+.tool-btn[data-tool="italic"] {
+    font-style: italic;
+}
+
+.tool-btn[data-tool="underline"] {
+    text-decoration: underline;
+}
+
+.tool-btn[data-tool="strikethrough"] {
+    text-decoration: line-through;
+}
+
+/* Estilo para botones de formato de texto */
+.tool-btn[data-tool="bold"]:not(.active) {
+    font-weight: normal;
+}
+
+.tool-btn[data-tool="italic"]:not(.active) {
+    font-style: normal;
+}
+
+.tool-btn[data-tool="underline"]:not(.active) {
+    text-decoration: none;
+}
+
+.tool-btn[data-tool="strikethrough"]:not(.active) {
+    text-decoration: none;
 }
 
 /* Controles de entrada - Estilo moderno */
@@ -236,17 +735,16 @@ select {
     cursor: pointer;
 }
 
-/* Main Content */
+/* Main Content - Ajustado para sidebar */
 .main-content {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: flex-start;
     background: #f8f9fa;
-    padding: 2rem;
-    padding-top: 1rem;
+    padding: 1rem;
     overflow: auto;
-    margin-top: 1rem;
+    height: calc(100vh - 56px); /* Altura total menos el header */
 }
 
 .pdf-viewer {
@@ -944,7 +1442,7 @@ img[draggable]:active {
 /* Notificaciones */
 .notification {
     position: fixed;
-    top: 20px;
+    top: 80px;
     right: 20px;
     background: #4CAF50;
     color: white;
@@ -954,6 +1452,9 @@ img[draggable]:active {
     z-index: 10000;
     transform: translateX(100%);
     transition: transform 0.3s ease;
+    max-width: 300px;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .notification.show {
@@ -966,6 +1467,18 @@ img[draggable]:active {
 
 .notification.warning {
     background: #ff9800;
+}
+
+/* Responsive para notificaciones */
+@media (max-width: 768px) {
+    .notification {
+        top: 70px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        font-size: 0.85rem;
+        padding: 0.75rem 1rem;
+    }
 }
 
 /* Modal */
@@ -1152,9 +1665,80 @@ img[draggable]:active {
         flex-wrap: wrap;
     }
     
+/* Responsive para móviles - Sidebar mejorado */
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+    }
+    
+    .toolbar {
+        width: 100%;
+        min-width: 100%;
+        height: auto;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 0.5rem;
+        border-right: none;
+        border-bottom: 1px solid #e1e5e9;
+    }
+    
+    .toolbar.compact {
+        width: 100%;
+        min-width: 100%;
+    }
+    
+    .toolbar-section {
+        flex-direction: row;
+        min-width: 120px;
+        margin-right: 1rem;
+    }
+    
+    .toolbar-section h3 {
+        display: none; /* Ocultar títulos en móviles */
+    }
+    
+    .tool-group {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+    
     .tool-btn {
-        min-width: 35px;
-        min-height: 35px;
+        width: 36px;
+        height: 36px;
         font-size: 0.8rem;
+        padding: 0.5rem;
+        justify-content: center;
+    }
+    
+    .tool-btn-text {
+        display: none; /* Ocultar texto en móviles */
+    }
+    
+    .toolbar-toggle {
+        display: none; /* Ocultar toggle en móviles */
+    }
+    
+    .main-wrapper {
+        height: calc(100vh - 80px);
+    }
+    
+    .app-header {
+        padding: 0.5rem 1rem;
+        min-height: 48px;
+    }
+    
+    .app-header h1 {
+        font-size: 1rem;
+    }
+    
+    .header-controls {
+        gap: 0.5rem;
+    }
+    
+    .btn {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+        min-height: 32px;
     }
 }
