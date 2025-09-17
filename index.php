@@ -260,6 +260,9 @@ $serverInfo = [
             <header class="app-header">
                 <h1>Editor PDF Avanzado</h1>
                 <div class="header-controls">
+                    <a href="../utilidades.php" class="btn btn-home" title="Volver al Panel de Utilidades">
+                        🏠 Inicio
+                    </a>
                     <input type="file" id="pdfInput" accept=".pdf" style="display: none;">
                     <button id="loadPdfBtn" class="btn btn-primary">Cargar PDF</button>
                     <button id="downloadPdfBtn" class="btn btn-secondary" disabled>Descargar</button>
