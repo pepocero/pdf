@@ -1,0 +1,2 @@
+# Mostrar primero la presentación (index.html) al entrar en la raíz del proyecto.
+DirectoryIndex index.html index.php

@@ -1363,8 +1363,15 @@ class PDFEditor {
         this.showNotification('Información de debug en consola (Ctrl+T para probar)', 'info');
     }
 
+    /** Rect del overlay de página: usar siempre esto en lugar de e.target, que puede ser un hijo (SVG, texto) y dar coordenadas erróneas (p. ej. líneas hacia la esquina superior izquierda). */
+    getPageOverlayRect(e, pageNum) {
+        const overlay = e.currentTarget || document.querySelector(`#page-${pageNum} .pdf-page-overlay`);
+        return overlay ? overlay.getBoundingClientRect() : null;
+    }
+
     onPageMouseDown(e, pageNum) {
-        const rect = e.target.getBoundingClientRect();
+        const rect = this.getPageOverlayRect(e, pageNum);
+        if (!rect) return;
         // Para resaltados, usar coordenadas absolutas (sin dividir por zoom)
         const xAbsolute = e.clientX - rect.left;
         const yAbsolute = e.clientY - rect.top;
@@ -1406,7 +1413,8 @@ class PDFEditor {
     }
 
     onPageMouseMove(e, pageNum) {
-        const rect = e.target.getBoundingClientRect();
+        const rect = this.getPageOverlayRect(e, pageNum);
+        if (!rect) return;
         // Para resaltados, usar coordenadas absolutas (sin dividir por zoom)
         const xAbsolute = e.clientX - rect.left;
         const yAbsolute = e.clientY - rect.top;
@@ -1436,7 +1444,8 @@ class PDFEditor {
     }
 
     onPageMouseUp(e, pageNum) {
-        const rect = e.target.getBoundingClientRect();
+        const rect = this.getPageOverlayRect(e, pageNum);
+        if (!rect) return;
         // Para resaltados, usar coordenadas absolutas (sin dividir por zoom)
         const xAbsolute = e.clientX - rect.left;
         const yAbsolute = e.clientY - rect.top;
@@ -1489,7 +1498,8 @@ class PDFEditor {
     onPageDoubleClick(e, pageNum) {
         // Manejar doble clic para edición de texto
         if (this.currentTool === 'textEdit') {
-            const rect = e.target.getBoundingClientRect();
+            const rect = this.getPageOverlayRect(e, pageNum);
+            if (!rect) return;
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             this.handleTextEditClick(x, y, pageNum);
@@ -4273,38 +4283,17 @@ class PDFEditor {
     // Eventos táctiles (simplificados)
     onPageTouchStart(e, pageNum) {
         const touch = e.touches[0];
-        const rect = e.target.getBoundingClientRect();
-        // Para resaltados, usar coordenadas absolutas (sin dividir por zoom)
-        const xAbsolute = touch.clientX - rect.left;
-        const yAbsolute = touch.clientY - rect.top;
-        // Para dibujos, usar coordenadas normalizadas (divididas por zoom)
-        const xNormalized = xAbsolute / this.zoom;
-        const yNormalized = yAbsolute / this.zoom;
-        this.onPageMouseDown({ clientX: touch.clientX, clientY: touch.clientY, target: e.target }, pageNum);
+        this.onPageMouseDown({ clientX: touch.clientX, clientY: touch.clientY, currentTarget: e.currentTarget }, pageNum);
     }
 
     onPageTouchMove(e, pageNum) {
         const touch = e.touches[0];
-        const rect = e.target.getBoundingClientRect();
-        // Para resaltados, usar coordenadas absolutas (sin dividir por zoom)
-        const xAbsolute = touch.clientX - rect.left;
-        const yAbsolute = touch.clientY - rect.top;
-        // Para dibujos, usar coordenadas normalizadas (divididas por zoom)
-        const xNormalized = xAbsolute / this.zoom;
-        const yNormalized = yAbsolute / this.zoom;
-        this.onPageMouseMove({ clientX: touch.clientX, clientY: touch.clientY, target: e.target }, pageNum);
+        this.onPageMouseMove({ clientX: touch.clientX, clientY: touch.clientY, currentTarget: e.currentTarget }, pageNum);
     }
 
     onPageTouchEnd(e, pageNum) {
         const touch = e.changedTouches[0];
-        const rect = e.target.getBoundingClientRect();
-        // Para resaltados, usar coordenadas absolutas (sin dividir por zoom)
-        const xAbsolute = touch.clientX - rect.left;
-        const yAbsolute = touch.clientY - rect.top;
-        // Para dibujos, usar coordenadas normalizadas (divididas por zoom)
-        const xNormalized = xAbsolute / this.zoom;
-        const yNormalized = yAbsolute / this.zoom;
-        this.onPageMouseUp({ clientX: touch.clientX, clientY: touch.clientY, target: e.target }, pageNum);
+        this.onPageMouseUp({ clientX: touch.clientX, clientY: touch.clientY, currentTarget: e.currentTarget }, pageNum);
     }
 }
 
