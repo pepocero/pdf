@@ -258,8 +258,16 @@ $serverInfo = [
         <div class="main-wrapper">
             <!-- Header -->
             <header class="app-header">
-                <h1>Editor PDF Avanzado</h1>
+                <div class="header-left">
+                    <button id="burgerMenuBtn" class="burger-menu" title="Abrir menú">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <h1>Editor PDF Avanzado</h1>
+                </div>
                 <div class="header-controls">
+
                     <a href="../utilidades.php" class="btn btn-home" title="Volver al Panel de Utilidades">
                         🏠 Inicio
                     </a>
@@ -291,7 +299,11 @@ $serverInfo = [
                 </div>
             </div>
         </div>
+
+        <!-- Overlay para móviles -->
+        <div id="sidebarOverlay" class="sidebar-overlay"></div>
     </div>
+
 
     <!-- Hidden file input for images -->
     <input type="file" id="imageInput" accept="image/*" style="display: none;">
@@ -354,20 +366,57 @@ $serverInfo = [
 
     <script src="js/pdf-editor-new.js"></script>
     <script>
-        // Funcionalidad del toggle del sidebar
+        // Funcionalidad del sidebar (Escritorio y Móvil)
         document.addEventListener('DOMContentLoaded', function() {
             const toolbar = document.getElementById('toolbar');
             const toggleBtn = document.getElementById('toolbarToggle');
+            const burgerBtn = document.getElementById('burgerMenuBtn');
+            const overlay = document.getElementById('sidebarOverlay');
             
-            toggleBtn.addEventListener('click', function() {
-                toolbar.classList.toggle('compact');
-                
-                // Guardar preferencia en localStorage
-                const isCompact = toolbar.classList.contains('compact');
-                localStorage.setItem('toolbarCompact', isCompact);
+            // Toggle para Escritorio (Modo compacto)
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    toolbar.classList.toggle('compact');
+                    const isCompact = toolbar.classList.contains('compact');
+                    localStorage.setItem('toolbarCompact', isCompact);
+                });
+            }
+            
+            // Toggle Universal (Burger Menu)
+            if (burgerBtn) {
+                burgerBtn.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        toolbar.classList.toggle('mobile-open');
+                        overlay.classList.toggle('active');
+                    } else {
+                        toolbar.classList.toggle('compact');
+                        const isCompact = toolbar.classList.contains('compact');
+                        localStorage.setItem('toolbarCompact', isCompact);
+                    }
+                });
+            }
+            
+            // Cerrar menú móvil al hacer clic en el overlay
+            if (overlay) {
+                overlay.addEventListener('click', function() {
+                    toolbar.classList.remove('mobile-open');
+                    overlay.classList.remove('active');
+                });
+            }
+            
+            // Cerrar menú móvil al hacer clic en cualquier botón de herramienta (opcional, para conveniencia)
+            const toolBtns = document.querySelectorAll('.tool-btn');
+            toolBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        toolbar.classList.remove('mobile-open');
+                        overlay.classList.remove('active');
+                    }
+                });
             });
+
             
-            // Cargar preferencia guardada
+            // Cargar preferencia guardada de escritorio
             const savedCompact = localStorage.getItem('toolbarCompact');
             if (savedCompact === 'true') {
                 toolbar.classList.add('compact');
@@ -382,6 +431,7 @@ $serverInfo = [
                 });
             });
         });
+
     </script>
 </body>
 </html>
