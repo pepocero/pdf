@@ -58,6 +58,28 @@ body {
     align-items: center;
 }
 
+.app-footer {
+    flex-shrink: 0;
+    background: #1e293b;
+    color: #94a3b8;
+    text-align: center;
+    padding: 0.3rem 1rem;
+    font-size: 0.7rem;
+    line-height: 1.4;
+    border-top: 1px solid #334155;
+}
+
+.app-footer a {
+    color: #e2e8f0;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.app-footer a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
 /* Controles de zoom en el header */
 .zoom-controls {
     display: flex;
@@ -812,7 +834,7 @@ select {
     background: #f8f9fa;
     padding: 1rem;
     overflow: auto;
-    height: calc(100vh - 56px); /* Altura total menos el header */
+    min-height: 0;
 }
 
 .pdf-viewer {
@@ -1820,7 +1842,8 @@ img[draggable]:active {
     }
 
     .main-content {
-        height: 100%;
+        height: auto;
+        min-height: 0;
         padding: 0.5rem;
     }
 

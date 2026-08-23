@@ -468,6 +468,18 @@ body {
     padding-top: 1rem;
     text-align: center;
     color: #a0aec0;
+    font-size: 0.85rem;
+}
+
+.footer-bottom a {
+    color: #e2e8f0;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.footer-bottom a:hover {
+    color: #ffffff;
+    text-decoration: underline;
 }
 
 /* Responsive Design */

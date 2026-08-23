@@ -298,6 +298,9 @@ $serverInfo = [
                     </div>
                 </div>
             </div>
+            <footer class="app-footer">
+                Diseñado por <a href="https://carlinitools.com" target="_blank" rel="noopener noreferrer">CarliniTools</a>
+            </footer>
         </div>
 
         <!-- Overlay para móviles -->
