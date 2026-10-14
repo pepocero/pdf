@@ -27,6 +27,7 @@ class PDFEditor {
         this.selectedElement = null;
         this.isAddingText = false;
         this.isEditingTextBox = false;
+        this.textOverlays = [];
         this.selectedShape = null; // Para manejar formas seleccionadas
         this.isDraggingShape = false; // Para arrastrar formas
         this.dragOffset = { x: 0, y: 0 }; // Offset del arrastre
@@ -397,7 +398,7 @@ class PDFEditor {
                 this.pdfLibDoc = null;
             }
             
-            await this.renderAllPages();
+            await this.renderAllPages({ clearTextOverlays: true });
             this.createTextLayersForAllPages();
             this.updatePageInfo();
             this.enableControls();
@@ -450,7 +451,13 @@ class PDFEditor {
         console.log('Capas de texto existentes limpiadas');
     }
 
-    async renderAllPages() {
+    async renderAllPages(options = {}) {
+        if (options.clearTextOverlays) {
+            this.textOverlays = [];
+        } else {
+            this.captureTextOverlays();
+        }
+
         const container = document.getElementById('pdfContainer');
         container.innerHTML = '';
         
@@ -500,6 +507,8 @@ class PDFEditor {
             });
         }
         
+        this.restoreAllTextOverlays();
+
         // Recrear capas de texto si la selección de texto está activa
         if (this.currentTool === 'textSelection') {
             // Esperar un poco para que se complete el renderizado
@@ -507,6 +516,178 @@ class PDFEditor {
                 this.createTextLayersForAllPages();
             }, 100);
         }
+    }
+
+    captureTextOverlays() {
+        const overlays = [];
+        const elements = document.querySelectorAll('.added-text, .text-box-container');
+
+        elements.forEach((element, index) => {
+            const pageNum = this.getPageNumberFromElement(element);
+            if (!pageNum) return;
+
+            const overlayEl = document.querySelector(`#page-${pageNum} .pdf-page-overlay`);
+            if (!overlayEl) return;
+
+            const overlayRect = overlayEl.getBoundingClientRect();
+            if (!overlayRect.width || !overlayRect.height) return;
+
+            const elRect = element.getBoundingClientRect();
+            const isTextBox = element.classList.contains('text-box-container');
+            const textArea = isTextBox ? element.querySelector('textarea') : null;
+            const styleSource = textArea || element;
+            const computed = window.getComputedStyle(styleSource);
+            const elementComputed = window.getComputedStyle(element);
+            const fontSize = parseFloat(styleSource.style.fontSize) || parseFloat(computed.fontSize) || 16;
+
+            overlays.push({
+                id: element.id || `text-overlay-${pageNum}-${index}-${Date.now()}`,
+                type: isTextBox ? 'text-box' : 'added-text',
+                pageNum,
+                leftRatio: (elRect.left - overlayRect.left) / overlayRect.width,
+                topRatio: (elRect.top - overlayRect.top) / overlayRect.height,
+                widthRatio: elRect.width / overlayRect.width,
+                heightRatio: elRect.height / overlayRect.height,
+                fontSizeRatio: fontSize / overlayRect.height,
+                paddingTopRatio: (parseFloat(elementComputed.paddingTop) || 0) / overlayRect.height,
+                paddingRightRatio: (parseFloat(elementComputed.paddingRight) || 0) / overlayRect.width,
+                paddingBottomRatio: (parseFloat(elementComputed.paddingBottom) || 0) / overlayRect.height,
+                paddingLeftRatio: (parseFloat(elementComputed.paddingLeft) || 0) / overlayRect.width,
+                text: isTextBox ? (textArea ? textArea.value : '') : (element.innerText || element.textContent || ''),
+                fontFamily: styleSource.style.fontFamily || computed.fontFamily || 'Arial',
+                color: styleSource.style.color || computed.color || '#000000',
+                backgroundColor: element.style.backgroundColor || 'rgba(255, 255, 255, 0.8)'
+            });
+        });
+
+        this.textOverlays = overlays;
+    }
+
+    getOverlayRestoreMetrics(overlay) {
+        const width = overlay.offsetWidth || overlay.getBoundingClientRect().width;
+        const height = overlay.offsetHeight || overlay.getBoundingClientRect().height;
+        return { width, height };
+    }
+
+    restoreAllTextOverlays() {
+        if (!this.textOverlays || this.textOverlays.length === 0) return;
+
+        this.textOverlays.forEach(data => {
+            const overlay = document.querySelector(`#page-${data.pageNum} .pdf-page-overlay`);
+            if (!overlay) return;
+
+            if (data.type === 'text-box') {
+                this.restoreTextBoxOverlay(overlay, data);
+            } else {
+                this.restoreAddedTextOverlay(overlay, data);
+            }
+        });
+    }
+
+    restoreAddedTextOverlay(overlay, data) {
+        const { width: overlayWidth, height: overlayHeight } = this.getOverlayRestoreMetrics(overlay);
+        const textDiv = document.createElement('div');
+        textDiv.id = data.id;
+        textDiv.className = 'added-text draggable-text';
+        textDiv.textContent = data.text;
+        textDiv.style.position = 'absolute';
+        textDiv.style.left = (data.leftRatio * overlayWidth) + 'px';
+        textDiv.style.top = (data.topRatio * overlayHeight) + 'px';
+        textDiv.style.fontSize = (data.fontSizeRatio * overlayHeight) + 'px';
+        textDiv.style.fontFamily = data.fontFamily;
+        textDiv.style.color = data.color;
+        textDiv.style.pointerEvents = 'auto';
+        textDiv.style.zIndex = '4';
+        textDiv.style.backgroundColor = data.backgroundColor || 'rgba(255, 255, 255, 0.8)';
+        textDiv.style.padding = `${data.paddingTopRatio * overlayHeight}px ${data.paddingRightRatio * overlayWidth}px ${data.paddingBottomRatio * overlayHeight}px ${data.paddingLeftRatio * overlayWidth}px`;
+        textDiv.style.borderRadius = '3px';
+        textDiv.style.border = 'none';
+        textDiv.style.cursor = 'move';
+        textDiv.draggable = false;
+
+        overlay.appendChild(textDiv);
+        this.makeDraggable(textDiv);
+        this.attachAddedTextEditors(textDiv);
+    }
+
+    restoreTextBoxOverlay(overlay, data) {
+        const { width: overlayWidth, height: overlayHeight } = this.getOverlayRestoreMetrics(overlay);
+        const textBox = document.createElement('div');
+        textBox.className = 'text-box-container';
+        textBox.id = data.id;
+        textBox.style.position = 'absolute';
+        textBox.style.left = (data.leftRatio * overlayWidth) + 'px';
+        textBox.style.top = (data.topRatio * overlayHeight) + 'px';
+        textBox.style.width = (data.widthRatio * overlayWidth) + 'px';
+        textBox.style.height = (data.heightRatio * overlayHeight) + 'px';
+        textBox.style.border = 'none';
+        textBox.style.borderRadius = '4px';
+        textBox.style.backgroundColor = data.backgroundColor || 'rgba(255, 255, 255, 0.9)';
+        textBox.style.zIndex = '4';
+        textBox.style.padding = `${data.paddingTopRatio * overlayHeight}px ${data.paddingRightRatio * overlayWidth}px ${data.paddingBottomRatio * overlayHeight}px ${data.paddingLeftRatio * overlayWidth}px`;
+        textBox.style.cursor = 'move';
+        textBox.style.boxSizing = 'border-box';
+
+        const textArea = document.createElement('textarea');
+        textArea.placeholder = 'Escriba aquí...';
+        textArea.value = data.text || '';
+        textArea.style.width = '100%';
+        textArea.style.height = '100%';
+        textArea.style.border = 'none';
+        textArea.style.outline = 'none';
+        textArea.style.resize = 'none';
+        textArea.style.backgroundColor = 'transparent';
+        textArea.style.fontSize = (data.fontSizeRatio * overlayHeight) + 'px';
+        textArea.style.fontFamily = data.fontFamily;
+        textArea.style.color = data.color;
+        textArea.style.pointerEvents = 'auto';
+        textArea.style.userSelect = 'text';
+
+        textArea.addEventListener('click', (e) => {
+            e.stopPropagation();
+            textArea.focus();
+        });
+        textArea.addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            textArea.focus();
+        });
+        textArea.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            textArea.focus();
+        });
+        textArea.addEventListener('input', (e) => {
+            e.stopPropagation();
+        });
+        textArea.addEventListener('keydown', (e) => {
+            e.stopPropagation();
+            if (e.key === 'Escape') {
+                textArea.blur();
+                this.isEditingTextBox = false;
+            }
+        });
+
+        textBox.appendChild(textArea);
+        overlay.appendChild(textBox);
+        this.makeDraggable(textBox);
+        this.makeResizable(textBox);
+    }
+
+    attachAddedTextEditors(textDiv) {
+        textDiv.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            textDiv.contentEditable = true;
+            textDiv.focus();
+
+            const range = document.createRange();
+            range.selectNodeContents(textDiv);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+        });
+
+        textDiv.addEventListener('blur', () => {
+            textDiv.contentEditable = false;
+        });
     }
 
     setupPageEvents(overlay, pageNum) {
@@ -2083,6 +2264,7 @@ class PDFEditor {
         if (text && text.trim()) {
             const overlay = document.querySelector(`#page-${pageNum} .pdf-page-overlay`);
             const textDiv = document.createElement('div');
+            textDiv.id = `added-text-${pageNum}-${Date.now()}`;
             textDiv.className = 'added-text draggable-text';
             textDiv.textContent = text;
             textDiv.style.position = 'absolute';
@@ -3416,67 +3598,225 @@ class PDFEditor {
         }
     }
 
-    // Función para agregar cuadros de texto al PDF
+    // Función para agregar cuadros de texto y capas de texto al PDF
     async addTextBoxesToPDF(pdfDoc) {
         try {
-            const textBoxes = document.querySelectorAll('.text-box-container');
-            console.log(`Agregando ${textBoxes.length} cuadros de texto al PDF`);
-            
-            for (const textBox of textBoxes) {
+            const textElements = document.querySelectorAll('.text-box-container, .added-text, .draggable-text');
+            const processed = new Set();
+            const standardFontName = (PDFLib.StandardFonts && PDFLib.StandardFonts.Helvetica) || 'Helvetica';
+            const font = await pdfDoc.embedFont(standardFontName);
+
+            console.log(`Agregando ${textElements.length} capas de texto al PDF`);
+
+            for (const element of textElements) {
+                if (processed.has(element)) continue;
+                processed.add(element);
+
                 try {
-                    // Extraer información del cuadro de texto
-                    const textArea = textBox.querySelector('textarea');
-                    if (!textArea) continue;
-                    
-                    const text = textArea.value.trim();
-                    if (!text) continue; // No agregar cuadros vacíos
-                    
-                    // Obtener posición y página
-                    const rect = textBox.getBoundingClientRect();
-                    const pageContainer = textBox.closest('.pdf-page-wrapper');
-                    if (!pageContainer) continue;
-                    
-                    const pageNum = parseInt(pageContainer.id.replace('page-', ''));
-                    if (!pageNum || pageNum < 1 || pageNum > this.totalPages) continue;
-                    
-                    const page = pdfDoc.getPage(pageNum - 1); // PDF-lib usa índice base 0
-                    const { width: pageWidth, height: pageHeight } = page.getSize();
-                    
-                    // Calcular posición relativa al PDF
-                    const overlay = pageContainer.querySelector('.pdf-page-overlay');
-                    const overlayRect = overlay.getBoundingClientRect();
-                    
-                    const relativeX = (rect.left - overlayRect.left) / this.zoom;
-                    const relativeY = (rect.top - overlayRect.top) / this.zoom;
-                    
-                    // Convertir coordenadas a sistema PDF-lib
-                    const scaleFactor = pageWidth / overlayRect.width;
-                    const x = relativeX * scaleFactor;
-                    const y = pageHeight - (relativeY * scaleFactor) - (rect.height / this.zoom * scaleFactor);
-                    
-                    // Validar coordenadas
-                    if (isNaN(x) || isNaN(y) || x < 0 || y < 0) {
-                        console.warn('Coordenadas inválidas para cuadro de texto:', { x, y, textBox });
-                        continue;
-                    }
-                    
-                    // Agregar texto al PDF
-                    page.drawText(text, {
-                        x: x,
-                        y: y,
-                        size: parseInt(textArea.style.fontSize) || 12,
-                        color: PDFLib.rgb(0, 0, 0), // Negro usando rgb()
-                        font: await pdfDoc.embedFont('Helvetica'),
-                    });
-                    
-                    console.log(`Cuadro de texto agregado a página ${pageNum}: "${text}"`);
+                    await this.drawOverlayTextOnPdf(pdfDoc, font, element);
                 } catch (error) {
-                    console.error('Error agregando cuadro de texto al PDF:', error);
+                    console.error('Error agregando texto al PDF:', error);
                 }
             }
         } catch (error) {
             console.error('Error en addTextBoxesToPDF:', error);
         }
+    }
+
+    cssColorToPdfRgb(color) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1;
+        canvas.height = 1;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#000000';
+        ctx.fillStyle = color || '#000000';
+        const hex = String(ctx.fillStyle).replace('#', '');
+        if (hex.length === 6) {
+            return PDFLib.rgb(
+                parseInt(hex.slice(0, 2), 16) / 255,
+                parseInt(hex.slice(2, 4), 16) / 255,
+                parseInt(hex.slice(4, 6), 16) / 255
+            );
+        }
+        return PDFLib.rgb(0, 0, 0);
+    }
+
+    getOverlayPdfRect(element, overlay, page) {
+        const elRect = element.getBoundingClientRect();
+        const overlayRect = overlay.getBoundingClientRect();
+        const { width: pageWidth, height: pageHeight } = page.getSize();
+
+        if (!overlayRect.width || !overlayRect.height) {
+            return null;
+        }
+
+        const scaleX = pageWidth / overlayRect.width;
+        const scaleY = pageHeight / overlayRect.height;
+        const x = (elRect.left - overlayRect.left) * scaleX;
+        const width = elRect.width * scaleX;
+        const height = elRect.height * scaleY;
+        const y = pageHeight - ((elRect.top - overlayRect.top) * scaleY) - height;
+
+        if ([x, y, width, height].some(value => Number.isNaN(value))) {
+            return null;
+        }
+
+        return { x, y, width, height, scaleX, scaleY };
+    }
+
+    wrapTextToWidth(font, text, size, maxWidth) {
+        const words = text.split(/\s+/).filter(Boolean);
+        if (!words.length) return [''];
+
+        const lines = [];
+        let current = '';
+
+        for (const word of words) {
+            const test = current ? `${current} ${word}` : word;
+            let testWidth;
+            try {
+                testWidth = font.widthOfTextAtSize(test, size);
+            } catch (error) {
+                return [text];
+            }
+
+            if (testWidth <= maxWidth || !current) {
+                current = test;
+            } else {
+                lines.push(current);
+                current = word;
+            }
+        }
+
+        if (current) {
+            lines.push(current);
+        }
+
+        return lines.length ? lines : [text];
+    }
+
+    async drawTextLineOnPdf(page, pdfDoc, font, text, options) {
+        if (!text) return;
+
+        try {
+            page.drawText(text, {
+                x: options.x,
+                y: options.y,
+                size: options.size,
+                color: options.color,
+                font
+            });
+            return;
+        } catch (error) {
+            console.warn('No se pudo incrustar el texto como fuente estándar, se rasteriza:', error);
+        }
+
+        const scale = 2;
+        const width = Math.max(1, Math.ceil(options.maxWidth * scale));
+        const height = Math.max(1, Math.ceil(options.size * 1.4 * scale));
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.scale(scale, scale);
+        ctx.font = `${options.size}px ${options.fontFamily || 'sans-serif'}`;
+        ctx.fillStyle = options.cssColor || '#000000';
+        ctx.textBaseline = 'top';
+        ctx.fillText(text, 0, 0);
+
+        const pngImage = await pdfDoc.embedPng(canvas.toDataURL('image/png'));
+        page.drawImage(pngImage, {
+            x: options.x,
+            y: options.y - (options.size * 0.2),
+            width: options.maxWidth,
+            height: options.size * 1.4
+        });
+    }
+
+    async drawOverlayTextOnPdf(pdfDoc, font, element) {
+        const pageContainer = element.closest('.pdf-page-wrapper');
+        if (!pageContainer) return;
+
+        const pageNum = parseInt(pageContainer.id.replace('page-', ''), 10);
+        if (!pageNum || pageNum < 1 || pageNum > this.totalPages) return;
+
+        const overlay = pageContainer.querySelector('.pdf-page-overlay');
+        if (!overlay) return;
+
+        const page = pdfDoc.getPage(pageNum - 1);
+        const metrics = this.getOverlayPdfRect(element, overlay, page);
+        if (!metrics) {
+            console.warn('Coordenadas inválidas para capa de texto:', element);
+            return;
+        }
+
+        let text = '';
+        let styleSource = element;
+        if (element.classList.contains('text-box-container')) {
+            const textArea = element.querySelector('textarea');
+            if (!textArea) return;
+            text = textArea.value;
+            styleSource = textArea;
+        } else {
+            text = element.innerText || element.textContent || '';
+        }
+
+        text = text.replace(/\r\n/g, '\n').trim();
+        if (!text) return;
+
+        const computed = window.getComputedStyle(styleSource);
+        const fontSize = Math.max(6, (parseFloat(computed.fontSize) || 12) * metrics.scaleY);
+        const color = this.cssColorToPdfRgb(computed.color);
+        const paddingLeft = (parseFloat(computed.paddingLeft) || 0) * metrics.scaleX;
+        const paddingTop = (parseFloat(computed.paddingTop) || 0) * metrics.scaleY;
+        const maxWidth = Math.max(8, metrics.width - paddingLeft * 2);
+        const lineHeight = fontSize * 1.25;
+        const topY = metrics.y + metrics.height;
+        let cursorY = topY - paddingTop - fontSize;
+
+        const background = computed.backgroundColor || '';
+        const rgbaMatch = background.match(/rgba?\(([^)]+)\)/);
+        if (rgbaMatch) {
+            const parts = rgbaMatch[1].split(',').map(part => parseFloat(part.trim()));
+            const alpha = parts.length === 4 ? parts[3] : 1;
+            if (alpha > 0.05 && metrics.width > 0 && metrics.height > 0) {
+                page.drawRectangle({
+                    x: metrics.x,
+                    y: metrics.y,
+                    width: metrics.width,
+                    height: metrics.height,
+                    color: PDFLib.rgb(
+                        Math.min(1, parts[0] / 255),
+                        Math.min(1, parts[1] / 255),
+                        Math.min(1, parts[2] / 255)
+                    ),
+                    opacity: Math.min(1, alpha)
+                });
+            }
+        }
+
+        const paragraphs = text.split('\n');
+        for (const paragraph of paragraphs) {
+            const wrappedLines = this.wrapTextToWidth(font, paragraph, fontSize, maxWidth);
+            for (const line of wrappedLines) {
+                if (cursorY < -fontSize) {
+                    break;
+                }
+
+                await this.drawTextLineOnPdf(page, pdfDoc, font, line, {
+                    x: metrics.x + paddingLeft,
+                    y: cursorY,
+                    size: fontSize,
+                    color,
+                    maxWidth,
+                    cssColor: computed.color,
+                    fontFamily: computed.fontFamily
+                });
+                cursorY -= lineHeight;
+            }
+        }
+
+        console.log(`Capa de texto agregada a página ${pageNum}: "${text}"`);
     }
 
 

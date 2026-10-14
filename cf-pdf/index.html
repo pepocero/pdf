@@ -6,6 +6,7 @@
     <title>Editor PDF Avanzado - Cloudflare Edition</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js" onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js'"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
@@ -20,25 +21,25 @@
             <!-- Sección de Inicio -->
             <div class="toolbar-section expanded">
                 <div class="toolbar-section-header">
-                    <div class="toolbar-section-label">HOME</div>
-                    <div class="toolbar-section-toggle">▼</div>
+                    <div class="toolbar-section-label">Inicio</div>
+                    <div class="toolbar-section-toggle"></div>
                 </div>
                 <div class="toolbar-section-content">
                     <div class="tool-group">
-                        <button id="selectTool" class="tool-btn active" data-tool="select" data-tooltip="Seleccionar">
-                            <span class="icon">↖</span>
+                        <button id="selectTool" class="tool-btn active" data-tool="select" data-tooltip="Seleccionar" title="Seleccionar">
+                            <span class="icon icon-select"><i class="fa-solid fa-location-arrow"></i></span>
                             <span class="tool-btn-text">Seleccionar</span>
                         </button>
-                        <button id="resizeTool" class="tool-btn" data-tool="resize" data-tooltip="Redimensionar">
-                            <span class="icon">📐</span>
+                        <button id="resizeTool" class="tool-btn" data-tool="resize" data-tooltip="Redimensionar" title="Redimensionar">
+                            <span class="icon"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></span>
                             <span class="tool-btn-text">Redimensionar</span>
                         </button>
-                        <button id="handTool" class="tool-btn" data-tool="hand" data-tooltip="Mano">
-                            <span class="icon">✋</span>
+                        <button id="handTool" class="tool-btn" data-tool="hand" data-tooltip="Mano" title="Mano">
+                            <span class="icon"><i class="fa-solid fa-hand"></i></span>
                             <span class="tool-btn-text">Mano</span>
                         </button>
-                        <button id="textSelectionTool" class="tool-btn" data-tool="textSelection" data-tooltip="Seleccionar Texto">
-                            <span class="icon">📝</span>
+                        <button id="textSelectionTool" class="tool-btn" data-tool="textSelection" data-tooltip="Seleccionar Texto" title="Seleccionar texto">
+                            <span class="icon"><i class="fa-solid fa-i-cursor"></i></span>
                             <span class="tool-btn-text">Seleccionar Texto</span>
                         </button>
                     </div>
@@ -48,29 +49,29 @@
             <!-- Sección de Insertar -->
             <div class="toolbar-section">
                 <div class="toolbar-section-header">
-                    <div class="toolbar-section-label">INSERT</div>
-                    <div class="toolbar-section-toggle">▼</div>
+                    <div class="toolbar-section-label">Insertar</div>
+                    <div class="toolbar-section-toggle"></div>
                 </div>
                 <div class="toolbar-section-content">
                     <div class="tool-group">
-                        <button id="textBoxTool" class="tool-btn" data-tool="textBox" data-tooltip="Cuadro de Texto">
-                            <span class="icon">📄</span>
+                        <button id="textBoxTool" class="tool-btn" data-tool="textBox" data-tooltip="Cuadro de Texto" title="Cuadro de texto">
+                            <span class="icon"><i class="fa-regular fa-square"></i></span>
                             <span class="tool-btn-text">Cuadro de Texto</span>
                         </button>
-                        <button id="textAddTool" class="tool-btn" data-tool="textAdd" data-tooltip="Agregar Texto">
-                            <span class="icon">T+</span>
+                        <button id="textAddTool" class="tool-btn" data-tool="textAdd" data-tooltip="Agregar Texto" title="Agregar texto">
+                            <span class="icon"><i class="fa-solid fa-font"></i></span>
                             <span class="tool-btn-text">Agregar Texto</span>
                         </button>
-                        <button id="imageTool" class="tool-btn" data-tool="image" data-tooltip="Imagen">
-                            <span class="icon">🖼</span>
+                        <button id="imageTool" class="tool-btn" data-tool="image" data-tooltip="Imagen" title="Imagen">
+                            <span class="icon"><i class="fa-regular fa-image"></i></span>
                             <span class="tool-btn-text">Imagen</span>
                         </button>
-                        <button id="highlightTool" class="tool-btn" data-tool="highlight" data-tooltip="Resaltar">
-                            <span class="icon">🖍</span>
+                        <button id="highlightTool" class="tool-btn" data-tool="highlight" data-tooltip="Resaltar" title="Resaltar">
+                            <span class="icon"><i class="fa-solid fa-highlighter"></i></span>
                             <span class="tool-btn-text">Resaltar</span>
                         </button>
-                        <button id="stampTool" class="tool-btn" data-tool="stamp" data-tooltip="Sello">
-                            <span class="icon">🏷</span>
+                        <button id="stampTool" class="tool-btn" data-tool="stamp" data-tooltip="Sello" title="Sello">
+                            <span class="icon"><i class="fa-solid fa-stamp"></i></span>
                             <span class="tool-btn-text">Sello</span>
                         </button>
                     </div>
@@ -80,29 +81,29 @@
             <!-- Sección de Dibujo -->
             <div class="toolbar-section">
                 <div class="toolbar-section-header">
-                    <div class="toolbar-section-label">DRAW</div>
-                    <div class="toolbar-section-toggle">▼</div>
+                    <div class="toolbar-section-label">Dibujo</div>
+                    <div class="toolbar-section-toggle"></div>
                 </div>
                 <div class="toolbar-section-content">
                     <div class="tool-group">
-                        <button id="drawTool" class="tool-btn" data-tool="draw" data-tooltip="Dibujar">
-                            <span class="icon">✏</span>
+                        <button id="drawTool" class="tool-btn" data-tool="draw" data-tooltip="Dibujar" title="Dibujar">
+                            <span class="icon"><i class="fa-solid fa-pencil"></i></span>
                             <span class="tool-btn-text">Dibujar</span>
                         </button>
-                        <button id="lineTool" class="tool-btn" data-tool="line" data-tooltip="Línea">
-                            <span class="icon">📏</span>
+                        <button id="lineTool" class="tool-btn" data-tool="line" data-tooltip="Línea" title="Línea">
+                            <span class="icon"><i class="fa-solid fa-minus"></i></span>
                             <span class="tool-btn-text">Línea</span>
                         </button>
-                        <button id="rectangleTool" class="tool-btn" data-tool="rectangle" data-tooltip="Rectángulo">
-                            <span class="icon">⬜</span>
+                        <button id="rectangleTool" class="tool-btn" data-tool="rectangle" data-tooltip="Rectángulo" title="Rectángulo">
+                            <span class="icon"><i class="fa-regular fa-square"></i></span>
                             <span class="tool-btn-text">Rectángulo</span>
                         </button>
-                        <button id="circleTool" class="tool-btn" data-tool="circle" data-tooltip="Círculo">
-                            <span class="icon">⭕</span>
+                        <button id="circleTool" class="tool-btn" data-tool="circle" data-tooltip="Círculo" title="Círculo">
+                            <span class="icon"><i class="fa-regular fa-circle"></i></span>
                             <span class="tool-btn-text">Círculo</span>
                         </button>
-                        <button id="eraserTool" class="tool-btn" data-tool="eraser" data-tooltip="Borrador">
-                            <span class="icon">🧽</span>
+                        <button id="eraserTool" class="tool-btn" data-tool="eraser" data-tooltip="Borrador" title="Borrador">
+                            <span class="icon"><i class="fa-solid fa-eraser"></i></span>
                             <span class="tool-btn-text">Borrador</span>
                         </button>
                         <input type="color" id="strokeColor" value="#000000" title="Color del trazo">
@@ -114,14 +115,14 @@
             <!-- Sección de Formato -->
             <div class="toolbar-section">
                 <div class="toolbar-section-header">
-                    <div class="toolbar-section-label">FORMAT</div>
-                    <div class="toolbar-section-toggle">▼</div>
+                    <div class="toolbar-section-label">Formato</div>
+                    <div class="toolbar-section-toggle"></div>
                 </div>
                 <div class="toolbar-section-content">
                     <div class="tool-group">
                         <input type="color" id="textColor" value="#000000" title="Color del texto">
                         <input type="range" id="fontSize" min="8" max="72" value="16" title="Tamaño de fuente">
-                        <select id="fontFamily">
+                        <select id="fontFamily" title="Fuente">
                             <option value="Arial">Arial</option>
                             <option value="Times New Roman">Times New Roman</option>
                             <option value="Courier New">Courier New</option>
@@ -129,20 +130,20 @@
                             <option value="Verdana">Verdana</option>
                             <option value="Georgia">Georgia</option>
                         </select>
-                        <button id="boldBtn" class="tool-btn" title="Negrita" data-tooltip="Negrita">
-                            <span class="icon">B</span>
+                        <button id="boldBtn" class="tool-btn format-btn" title="Negrita" data-tooltip="Negrita">
+                            <span class="icon format-b">B</span>
                             <span class="tool-btn-text">Negrita</span>
                         </button>
-                        <button id="italicBtn" class="tool-btn" title="Cursiva" data-tooltip="Cursiva">
-                            <span class="icon">I</span>
+                        <button id="italicBtn" class="tool-btn format-btn" title="Cursiva" data-tooltip="Cursiva">
+                            <span class="icon format-i">I</span>
                             <span class="tool-btn-text">Cursiva</span>
                         </button>
-                        <button id="underlineBtn" class="tool-btn" title="Subrayado" data-tooltip="Subrayado">
-                            <span class="icon">U</span>
+                        <button id="underlineBtn" class="tool-btn format-btn" title="Subrayado" data-tooltip="Subrayado">
+                            <span class="icon format-u">U</span>
                             <span class="tool-btn-text">Subrayado</span>
                         </button>
-                        <button id="strikethroughBtn" class="tool-btn" title="Tachado" data-tooltip="Tachado">
-                            <span class="icon">S</span>
+                        <button id="strikethroughBtn" class="tool-btn format-btn" title="Tachado" data-tooltip="Tachado">
+                            <span class="icon format-s">S</span>
                             <span class="tool-btn-text">Tachado</span>
                         </button>
                     </div>
@@ -152,37 +153,37 @@
             <!-- Sección de Edición -->
             <div class="toolbar-section">
                 <div class="toolbar-section-header">
-                    <div class="toolbar-section-label">EDIT</div>
-                    <div class="toolbar-section-toggle">▼</div>
+                    <div class="toolbar-section-label">Edición</div>
+                    <div class="toolbar-section-toggle"></div>
                 </div>
                 <div class="toolbar-section-content">
                     <div class="tool-group">
-                        <button id="textEditTool" class="tool-btn" data-tool="textEdit" data-tooltip="Editar Texto">
-                            <span class="icon">✏</span>
+                        <button id="textEditTool" class="tool-btn" data-tool="textEdit" data-tooltip="Editar Texto" title="Editar texto">
+                            <span class="icon"><i class="fa-solid fa-pen-to-square"></i></span>
                             <span class="tool-btn-text">Editar Texto</span>
                         </button>
                         <button id="copyBtn" class="tool-btn" title="Copiar" data-tooltip="Copiar">
-                            <span class="icon">📋</span>
+                            <span class="icon"><i class="fa-regular fa-copy"></i></span>
                             <span class="tool-btn-text">Copiar</span>
                         </button>
                         <button id="cutBtn" class="tool-btn" title="Cortar" data-tooltip="Cortar">
-                            <span class="icon">✂</span>
+                            <span class="icon"><i class="fa-solid fa-scissors"></i></span>
                             <span class="tool-btn-text">Cortar</span>
                         </button>
                         <button id="pasteBtn" class="tool-btn" title="Pegar" data-tooltip="Pegar">
-                            <span class="icon">📌</span>
+                            <span class="icon"><i class="fa-solid fa-paste"></i></span>
                             <span class="tool-btn-text">Pegar</span>
                         </button>
                         <button id="deleteBtn" class="tool-btn" title="Eliminar" data-tooltip="Eliminar">
-                            <span class="icon">🗑</span>
+                            <span class="icon"><i class="fa-regular fa-trash-can"></i></span>
                             <span class="tool-btn-text">Eliminar</span>
                         </button>
                         <button id="undoBtn" class="tool-btn" title="Deshacer" data-tooltip="Deshacer">
-                            <span class="icon">↶</span>
+                            <span class="icon"><i class="fa-solid fa-rotate-left"></i></span>
                             <span class="tool-btn-text">Deshacer</span>
                         </button>
                         <button id="redoBtn" class="tool-btn" title="Rehacer" data-tooltip="Rehacer">
-                            <span class="icon">↷</span>
+                            <span class="icon"><i class="fa-solid fa-rotate-right"></i></span>
                             <span class="tool-btn-text">Rehacer</span>
                         </button>
                     </div>
@@ -192,33 +193,33 @@
             <!-- Sección de Movimiento -->
             <div class="toolbar-section">
                 <div class="toolbar-section-header">
-                    <div class="toolbar-section-label">MOVE</div>
-                    <div class="toolbar-section-toggle">▼</div>
+                    <div class="toolbar-section-label">Orden</div>
+                    <div class="toolbar-section-toggle"></div>
                 </div>
                 <div class="toolbar-section-content">
                     <div class="tool-group">
                         <button id="rotateLeftBtn" class="tool-btn" title="Rotar izquierda" data-tooltip="Rotar izquierda">
-                            <span class="icon">↶</span>
+                            <span class="icon"><i class="fa-solid fa-rotate-left"></i></span>
                             <span class="tool-btn-text">Rotar Izq</span>
                         </button>
                         <button id="rotateRightBtn" class="tool-btn" title="Rotar derecha" data-tooltip="Rotar derecha">
-                            <span class="icon">↷</span>
+                            <span class="icon"><i class="fa-solid fa-rotate-right"></i></span>
                             <span class="tool-btn-text">Rotar Der</span>
                         </button>
                         <button id="flipHorizontalBtn" class="tool-btn" title="Voltear horizontal" data-tooltip="Voltear horizontal">
-                            <span class="icon">↔</span>
+                            <span class="icon"><i class="fa-solid fa-arrows-left-right"></i></span>
                             <span class="tool-btn-text">Voltear H</span>
                         </button>
                         <button id="flipVerticalBtn" class="tool-btn" title="Voltear vertical" data-tooltip="Voltear vertical">
-                            <span class="icon">↕</span>
+                            <span class="icon"><i class="fa-solid fa-arrows-up-down"></i></span>
                             <span class="tool-btn-text">Voltear V</span>
                         </button>
                         <button id="bringToFrontBtn" class="tool-btn" title="Traer al frente" data-tooltip="Traer al frente">
-                            <span class="icon">⬆</span>
+                            <span class="icon"><i class="fa-solid fa-layer-group"></i></span>
                             <span class="tool-btn-text">Al Frente</span>
                         </button>
                         <button id="sendToBackBtn" class="tool-btn" title="Enviar atrás" data-tooltip="Enviar atrás">
-                            <span class="icon">⬇</span>
+                            <span class="icon"><i class="fa-solid fa-clone"></i></span>
                             <span class="tool-btn-text">Atrás</span>
                         </button>
                     </div>
@@ -227,11 +228,11 @@
 
             <!-- Paginación compacta -->
             <div class="pagination-compact">
-                <div class="pagination-compact-header">Paginación</div>
+                <div class="pagination-compact-header"><i class="fa-regular fa-file-lines"></i></div>
                 <div class="pagination-controls">
-                    <button id="prevPageBtn" class="pagination-btn" title="Página anterior" data-tooltip="Página anterior">‹</button>
+                    <button id="prevPageBtn" class="pagination-btn" title="Página anterior" data-tooltip="Página anterior"><i class="fa-solid fa-chevron-left"></i></button>
                     <div id="pageInfo" class="pagination-info">1/1</div>
-                    <button id="nextPageBtn" class="pagination-btn" title="Página siguiente" data-tooltip="Página siguiente">›</button>
+                    <button id="nextPageBtn" class="pagination-btn" title="Página siguiente" data-tooltip="Página siguiente"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
         </div>
